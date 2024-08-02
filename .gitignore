@@ -462,3 +462,6 @@ $RECYCLE.BIN/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Locally installed .dotnet directory
+.dotnet/

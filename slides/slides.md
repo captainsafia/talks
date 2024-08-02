@@ -9,17 +9,9 @@ class: text-white
 
 ---
 
-# Native AoT Support 🥳
-
-- Supported for minimal APIs :partying_face:
-- Trim and native AoT compat for:
-  - Microsoft.AspNetCore.OpenApi
-  - Microsoft.AspNetCore.Mvc.ApiExplorer
-  - Microsoft.OpenApi
-
----
-
 # Schemas and Schema Transformers
+
+<v-click>
 
 ````md magic-move
 ```csharp
@@ -83,6 +75,8 @@ await ApplySchemaTransformersAsync(openApiSchema, context, cancellationToken);
 return openApiSchema;
 ```
 ````
+
+</v-click>
 
 ---
 layout: cover
@@ -167,6 +161,83 @@ ApplySchemaReferenceTransformer(document, context, cancellationToken)
 ````
 
 ---
+layout: cover
+---
+
+✨ The Implications ✨
+
+---
+
+# Might need to mark more types in your JSON serializer context
+
+```csharp
+var builder = WebApplication.CreateBuilder();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+app.MapGet("/", (DateOnly date) => ...);
+
+[JsonSerializable(typeof(DateOnly))]
+public partial class AppJsonSerializerContext : JsonSerializerContext { }
+```
+
+---
+
+# Need to use schema transformers to define schemas for types with custom transformers
+
+```csharp
+var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddOpenApi(options =>
+{
+  options.AddSchemaTransformer((schema, context, cancellationToken) =>
+  {
+    if (context.JsonTypeInfo.Type == typeof(MyCustomType))
+    {
+      schema.Properties["age"] = new OpenApiSchema { Type = "integer" };
+      schema.Properties["name"] = new OpenApiSchema { Type = "string" };
+      return Task.CompletedTask;
+    }
+  });
+});
+
+var app = builder.Build();
+
+app.MapPost("/", (MyCustomType type) => ..);
+
+public record MyCustomType(int Age, string Name);
+public class MyCustomTypeConverter : JsonConverter<MyCustomType> { }
+```
+
+---
+
+# Schemas may look a little different
+
+- No `additionalProperties` set on schemas
+- No support for `readOnly`/`writeOnly`
+- `allOf` for representing multiple parameters bound from a form
+- `anyOf` for polymorphic types (based on `[JsonDerivedType]`)
+- `[Consumes]` for controllers only respected when input formatters configured correctly
+- Schema transformers are your escape hatch
+
+---
+
+# Native AoT Support 🥳
+
+- Supported for minimal APIs
+- Trim and native AoT compat for:
+  - Microsoft.AspNetCore.OpenApi
+  - Microsoft.AspNetCore.Mvc.ApiExplorer
+  - Microsoft.OpenApi
+
+---
 
 # XML Doc Support for OpenAPI
 
@@ -218,6 +289,7 @@ layout: cover
 - Reusing logic from DocFX and Roslyn as much as possible
 - Emits document and schema transformers that documentation to the output document
 - Uses interceptors to register generated transformers onto document instances
+
 ---
 
 # Acknowledgements

@@ -7,9 +7,16 @@
     <PublishAoT>true</PublishAoT>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <MicrosoftAspNetCoreOpenApiOld>9.0.0-preview.6.24328.4</MicrosoftAspNetCoreOpenApiOld>
+    <MicrosoftAspNetCoreOpenApiNew>9.0.0-rc.1.24374.1</MicrosoftAspNetCoreOpenApiNew>
+    <MicrosoftOpenApiOld>1.6.15</MicrosoftOpenApiOld>
+    <MicrosoftOpenApiNew>1.6.16</MicrosoftOpenApiNew>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-rc.1.24374.1" />
-    <PackageReference Include="Scalar.AspNetCore" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="$(MicrosoftAspNetCoreOpenApiNew)" />
+    <PackageReference Include="Microsoft.OpenApi" Version="$(MicrosoftOpenApiNew)" />
   </ItemGroup>
 
 </Project>
