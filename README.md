@@ -1,10 +1,1 @@
-# Open API in .NET 9 Community Standup
-
-## This is my document
-### This is my document
-
-*bold* **bold**
-
-```csharp
-var foo = "string"
-```
+# Open API in .NET 9 Community Standup (August 13th, 2024)
