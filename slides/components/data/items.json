@@ -1,0 +1,7 @@
+[
+    "Add support for endpoint filters",
+    "Resolve parameters from DI container",
+    "Add support for IEndpointMetadataProvider",
+    "Add support for customizable model binding",
+    "Add support for IEndpointConventionBuilder"
+] 
