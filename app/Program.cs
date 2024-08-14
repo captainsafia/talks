@@ -1,6 +1,13 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.Text.Json.Serialization;
+
+var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.AddOpenApi();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
 
 var app = builder.Build();
 
@@ -9,17 +16,27 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-var todos = app.MapGroup("/todos");
-List<Todo> tasks = [new Todo(1, "Buy milk", false), new Todo(2, "Buy bread", true)];
+var sampleTodos = new Todo[] {
+    new(1, "Walk the dog"),
+    new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
+    new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
+    new(4, "Clean the bathroom"),
+    new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
+};
 
-todos.MapGet("/", () => tasks);
-todos.MapGet("/{id}", (int id) => tasks.FirstOrDefault(x => x.Id == id));
-todos.MapPost("/", (Todo todo) => 
-{
-    tasks.Add(todo);
-    return TypedResults.Created($"/todos/{todo.Id}", todo);
-});
+var todosApi = app.MapGroup("/todos");
+todosApi.MapGet("/", () => sampleTodos);
+todosApi.MapGet("/{id}", (int id) =>
+    sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
+        ? Results.Ok(todo)
+        : Results.NotFound());
 
 app.Run();
 
-record Todo(int Id, string Title, bool Completed);
+public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
+
+[JsonSerializable(typeof(Todo[]))]
+internal partial class AppJsonSerializerContext : JsonSerializerContext
+{
+
+}

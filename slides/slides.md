@@ -225,7 +225,7 @@ public class MyCustomTypeConverter : JsonConverter<MyCustomType> { }
 - `allOf` for representing multiple parameters bound from a form
 - `anyOf` for polymorphic types (based on `[JsonDerivedType]`)
 - `[Consumes]` for controllers only respected when input formatters configured correctly
-- Schema transformers are your escape hatch
+- Schema transformers for customization
 
 ---
 
