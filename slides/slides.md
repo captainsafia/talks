@@ -4,7 +4,12 @@ class: text-center
 ---
 
 # minimal apis from scratch
-### a presentation by @captainsafia
+## a presentation by @captainsafia
+
+---
+layout: image
+image: /images/dotnetday-sponsors.jpg
+---
 
 ---
 layout: full
@@ -14,10 +19,11 @@ layout: full
 
 <v-clicks>
 
-### - spend most of our time in vs code
-### - start from an empty `Program.cs`
-### - finish with a partial implementation of minimal apis
-### - learn about framework fundamentals along the way
+## - spend most of our time in vs code
+## - start from an empty `Program.cs`
+## - finish with a partial implementation of minimal apis
+## - learn about framework fundamentals along the way
+## - finish up with some qa
 
 </v-clicks>
 
@@ -30,8 +36,17 @@ class: text-center
 
 ---
 layout: center
+disabled: true
 ---
 
 <RandomOnClick />
+
+---
+layout: intro
+class: text-center
+---
+
+# thanks!
+## questions?
 
 ----
