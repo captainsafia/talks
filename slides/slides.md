@@ -24,6 +24,9 @@ layout: full
 ## - finish with a partial implementation of minimal apis
 ## - learn about framework fundamentals along the way
 ## - finish up with some qa
+## - can't use any apis defined in the asp.net core shared framework
+## - can get a little bit of help from copilot 😄
+## - we'll keep coding until we run out of time
 
 </v-clicks>
 
