@@ -4,7 +4,7 @@ class: text-center
 ---
 
 # minimal apis from scratch
-## a presentation by @captainsafia
+## a pair programming session with @captainsafia
 
 ---
 layout: image
