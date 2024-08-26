@@ -3,7 +3,7 @@ layout: intro
 class: text-center
 ---
 
-# minimal apis from scratch
+# building minimal apis from scratch
 ## a pair programming session with @captainsafia
 
 ---
@@ -36,13 +36,6 @@ class: text-center
 ---
 
 # let's jump to vs code!
-
----
-layout: center
-disabled: true
----
-
-<RandomOnClick />
 
 ---
 layout: intro

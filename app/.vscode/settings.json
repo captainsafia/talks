@@ -1,8 +1,8 @@
 {
     "workbench.activityBar.location": "hidden",
     "workbench.layoutControl.enabled": false,
-    "editor.fontSize": 18,
-    "terminal.integrated.fontSize": 18,
+    "editor.fontSize": 20,
+    "terminal.integrated.fontSize": 20,
     "workbench.colorTheme": "GitHub Dark Default",
     "dotnet.dotnetPath": "/Users/captainsafia/git/talks/minimal-apis-from-scratch/app/.dotnet"
 }
