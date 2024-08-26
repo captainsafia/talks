@@ -1,22 +1,25 @@
 ---
 layout: cover
+class: text-center
 ---
 
 # openapi in .net
-## past, present, and future
-### safia abdalla | principal software engineer | microsoft
+# past, present, and future
+## safia abdalla | principal software engineer | microsoft
 
 <!-- good afternoon, everyone! my name is safia abdalla and i'm an engineer on the asp.net core team at microsoft and i am here to talk to you about the past, present, and future of openapi in .net. if you don't know what openapi is, don't worry you'll learn all about it in the course of this talk. and if you do know what openapi is, you'll hopefully learn some interesting new context from this presentation. -->
 
 ---
-
-# in the beginning...
+layout: image
+image: ./images/thinking-gif.webp
+---
 
 <!-- as i was preparing for this presentation, i was trying to think of the right narrative structure for this talk. i tinkered around with a couple of different ideas and i realized after a while that the best way to talk about it... -->
 
 ---
-
-*insert gif of someone having an epiphany here*
+layout: image
+image: ./images/epiphany.webp
+---
 
 <!-- was to talk about my own past, present, and future with openapi in dotnet because it just so happens that its a feature area near and dear to my heart. -->
 
@@ -28,13 +31,16 @@ layout: cover
 
 ---
 
-*insert blazor logo then signalr and mvc logos*
+![blazor-logo](./images/blazor-logo.png)
+![signalr-logo](./images/signalr-logo.png)
+![grpc-logo](./images/grpc-logo.png)
+
 
 <!-- when i joined the asp.net core team, i was originally working on blazor around the .net 5/blazor wasm era. about a year later though, i found myself on a new team under the asp.net core umbrella as part of a re-org: the web frameworks team. the web frameworks team contained engineers that were stewards of mvc's controller-based apis, signalr, and this new-fangled thing called minimal apis. -->
 
 ---
 
-*insert above logos and openapi logo*
+![openapi-logo](./images/openapi-logo.png)
 
 <!-- in addition to that, the team also had ownership of this feature area for openapi. there wasn't a dedicated engineer focused on the area, but being a bit of a "say yes to everything" person, i found myself as the defacto owner for the openapi around around the tail of the .net 6 development cycle. -->
 
@@ -45,30 +51,57 @@ layout: cover
 <!-- and that's when i embarked on my own journey to figure out what the heck openapi was and what asp.net core's openapi support looked like at the time. -->
 
 ---
-
-*insert screenshot of swagger ui here*
+layout: image
+image: ./images/swagger-ui.png
+backgroundSize: contain
+---
 
 <!-- now, i wasn't a total stranger to openapi. i'd seen the yaml/json files before and i had used swagger ui to test plenty of apis. but there's a difference between passing familiarity and deep knowledge. -->
 
 ---
 
-```json
-{
-
-}
+```yaml
+/pets:
+	get:
+		summary: List all pets
+		operationId: listPets
+		tags:
+			- pets
+		parameters:
+			- name: limit
+				in: query
+				required: false
+				schema:
+					type: integer
+					maximum: 100
+					format: int32
+		responses:
+			'200':
+				description: A paged array of pets
+				content:
+					application/json:    
+						schema:
+						$ref: "#/components/schemas/Pets"
 ```
 
 <!-- openapi is a specification for describing REST APIs. it provides a standard description format that code generations, specification testing tools, documentation uis, and a variety of other tools can build on to enhance the experience of building, testing, and deploying web apis. -->
 
 ---
-
-*insert openapi vs swagger image*
+layout: image
+image: ./images/openapi-vs-swagger.png
+backgroundSize: contain
+---
 
 <!-- in addition to the term openapi, you might also be familiar with the term swagger. swagger was the originally name for the specification, a brainchild of smartbear, the company that makes swagger ui and the associated specification. i have a pet peeve about naming so i always use openapi to refer to the specification itself, and swagger to refer to the ui that some of you might be familiar with that builds on top of the specification. -->
 
 ---
+layout: center
+class: text-center
+---
 
-*insert spec first versus code first image with transition*
+# Spec First
+# vs
+# Code First
 
 <!-- ok, so that's a bird's eye view of what openapi is. but how do frameworks like asp.net core support integrating with it. the framing that i like to use for this is the framing of a spec-first versus code-first implementation.
 
@@ -77,8 +110,13 @@ in a spec-first implementation, the openapi document that describes a rest api i
 in a code-first approach, engineers implement the REST api in their language of choice (.net for all of us here), and then export an openapi document that represents the behavior of the service that was implemented. that openapi document is then shared with client generators, front-end development teams, external api consumers, and more. -->
 
 ---
+layout: center
+class: text-center
+---
 
-*highlight code-first image from previous slide*
+# Spec First
+# vs
+# Code First
 
 <!-- now as i would come to learn in my self-directed onboarding of the openapi area, asp.net core is highly optimized for the code-first approach. some of you might be familiar with this if you've tried to run spec-first api design process for your team. i'll be the first to admit that we don't do a great job of that. -->
 
@@ -91,8 +129,10 @@ in a code-first approach, engineers implement the REST api in their language of 
 ...and this set of abstractions is affectionately referred to as ApiExplorer. -->
 
 ---
-
-*insert screenshot of visual studio endpoints explorer*
+layout: image
+image: ./images/visual-studio-api-explorer.png
+backgroundSize: contain
+---
 
 <!-- i'm going interject the chronological narrative here to travel from 2021 to the present day. The ApiExplorer that i'll be describing in the next few slides is not to be confused with the endpoints explorer feature that exists in visual studio. They are two closely related but distinct components and well naming is the hardest problem in computer science. -->
 
@@ -264,19 +304,7 @@ this interface is the holy grail of api description metadata in our application.
 
 ---
 
-````md magic-move
-```csharp {lines:true}
-namespace Swashbuckle.AspNetCore.SwaggerGen
-{
-	public class SwaggerGenerator
-	{
-		public SwaggerGenerator(
-			SwaggerGeneratorOptions options,
-            IApiDescriptionGroupCollectionProvider apiDescriptionsProvider,
-            ISchemaGenerator schemaGenerator
-		)
-	}
-}
+
 ```csharp {7}{lines:true}
 namespace Swashbuckle.AspNetCore.SwaggerGen
 {
@@ -290,7 +318,6 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
 	}
 }
 ```
-````
 
 <!-- you'll see this interface come into play in openapi document generators in the dotnet ecosystem. one of the popular libraries in this space is swashbuckle. here you can see the signature for the swaggergen service that swashbuckle uses as part of its document generation infrastructure. -->
 
@@ -372,8 +399,8 @@ what the package is actually doing under the hood is wiring up a set of msbuild 
 
 ---
 
+````md magic-move
 ```csharp
-private const string DocumentService = "Microsoft.Extensions.ApiDescriptions.IDocumentProvider";
 var assemblyName = new AssemblyName(_context.AssemblyName);
 var assembly = Assembly.Load(assemblyName);
 var entryPointType = assembly.EntryPoint?.DeclaringType;
@@ -382,7 +409,8 @@ if (entryPointType == null)
 	_reporter.WriteError(Resources.FormatMissingEntryPoint(_context.AssemblyPath));
 	return 3;
 }
-// ...
+```
+```csharp
 void ConfigureHostBuilder(object hostBuilder)
 {
 	((IHostBuilder)hostBuilder).ConfigureServices((context, services) =>
@@ -391,7 +419,10 @@ void ConfigureHostBuilder(object hostBuilder)
 		services.AddSingleton<IHostLifetime, NoopHostLifetime>();
 	});
 }
-// ...
+```
+```csharp
+private const string DocumentService = "Microsoft.Extensions.ApiDescriptions.IDocumentProvider";
+
 var factory = HostFactoryResolver.ResolveHostFactory(assembly,
 	stopApplication: false,
 	configureHostBuilder: ConfigureHostBuilder,
@@ -408,6 +439,7 @@ foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 	}
 }
 ```
+````
 
 <!-- and what that tool does under the hood is surprising. it launches your api's entrypoint with a no-op server implementation, uses a set of APIs from the runtime to resolve the DI container associated with that application, and then queries the DI container for a type implementing the `IDocumentProvider` interface. 
 
@@ -471,8 +503,10 @@ later, i would compile some of these findings into a notion doc titled the "stat
 -->
 
 ---
+layout: center
+---
 
-*insert .net 7 logo here*
+![dotnet-7](./images/dotnet-7-logo.png)
 
 <!-- ok, so now we find ourselves in 2022, around the time we are working on .net 7.  -->
 
@@ -766,6 +800,10 @@ the other thing that's on my bucket list is enhancing the openapi support that w
 -->
 
 ---
+layout: image
+image: images/nuget-meapidescriptionserver.png
+backgroundSize: contain
+---
 
 <!--
 here's another one -- improving the experience for build-time document generation. i don't think we'll be able to get over the requirement to launch the application's entry point anytime soon but i'd like to make the feature a little bit better. it's a little opaque to configure at the moment and doesn't have the best caching behaviors when invoked in msbuild.
@@ -779,20 +817,30 @@ and of course as i mentioned earlier, i'd love to hear what you think would be i
 <!-- and that's the story or at least, my story, of how openapi in .net has evolved over the past three years.  -->
 
 ---
-layout: two-cols
+layout: two-cols-header
 ---
 
 # Acknowledgements
+
+::left::
 
 - Darrel Miller
 - Rico Suter
 - Ryan Nowak
 - Doug Bunting
+- Eric Erhardt
+
+::right::
+
+- Mike Kistler
+- Vincent Biret
+
 
 <!-- before i conclude this talk, i wanted to close by emphasizing that this is the story of openapi support in .net as i've seen it. i'm now a participant in an ecosystem that's been development by a variety of individuals over a number of years. in this slide, i've listed out the names of people who've been involved in the space over the past, either in developing api explorer, ecosystem apis, the underlying `microsoft.openapi` library, or work on the spec itself. -->
 
 ---
 layout: cover
+class: text-center
 ---
 
 # thanks!
