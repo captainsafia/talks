@@ -39,14 +39,18 @@ image: ./images/epiphany.webp
 <!-- when i joined the asp.net core team, i was originally working on blazor around the .net 5/blazor wasm era. about a year later though, i found myself on a new team under the asp.net core umbrella as part of a re-org: the web frameworks team. the web frameworks team contained engineers that were stewards of mvc's controller-based apis, signalr, and this new-fangled thing called minimal apis. -->
 
 ---
-
-![openapi-logo](./images/openapi-logo.png)
+layout: image
+image: ./images/openapi-logo.png
+backgroundSize: contain
+---
 
 <!-- in addition to that, the team also had ownership of this feature area for openapi. there wasn't a dedicated engineer focused on the area, but being a bit of a "say yes to everything" person, i found myself as the defacto owner for the openapi around around the tail of the .net 6 development cycle. -->
 
 ---
-
-*insert investigation related gif here*
+layout: image
+image: ./images/learning-gif.webp
+backgroundSize: contain
+---
 
 <!-- and that's when i embarked on my own journey to figure out what the heck openapi was and what asp.net core's openapi support looked like at the time. -->
 
@@ -328,8 +332,10 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
 <!-- now, i'll admit that i've had a love-hate relationship with ApiExplorer as an abstraction. at times, i've felt that it was redundant to have yet another way to describe endpoints in an application? why not just use openapi directly instead of this middleman abstraction? -->
 
 ---
-
-*insert image about being powerful here*
+layout: image
+image: ./images/voltron-power.webp
+backgroundSize: contain
+---
 
 <!-- but as it turns out, apiexplorer is powerful because it describes apis with a greater level of fidelity than openapi does and the richness of that abstraction makes it particularly powerful. -->
 
@@ -563,8 +569,10 @@ if you wanted to, you could provide a callback to the `WithOpenApi` method that 
 <!-- that was .net 7. .net 8 was a relatively quiet release on the openapi front. i found myself going on a bit of a side quest working on this little thing called the request delegate generator. it was part of our native AoT effort in .net 8 and involved introducing compile-time based code generation for minimal apis. -->
 
 ---
-
-*insert tinkering related gif here*
+layout: image
+image: ./images/tinkering-gif.webp
+backgroundSize: contain
+---
 
 <!-- but, i was still tinkering with some ideas related to openapi on the side. here are just some of the things that i was playing around with. -->
 
@@ -727,13 +735,15 @@ using System.Text.Json;
 using System.Text.Json.Schema;
 
 var schema = JsonSchemaExporter.GetSchemaAsJsonNode(typeof(Todo), JsonSerializerOptions.Default);
+
+record Todo(int Id, string Title, bool IsCompleted, DateTime DueDate);
 ```
 
 <!-- in dotnet9, the system.text.json team has introduced new apis for generating json schemas from dotnet types. -->
 
 ---
 
-```
+```bash
 $ dotnet new webapi -o OpenApiWithAot
 $ cd OpenApiWithAot
 $ dotnet publish /p:PublishAoT=true
@@ -744,8 +754,15 @@ $ dotnet publish /p:PublishAoT=true
 <!-- another neat thing about our openapi support in .net 9 is that it is native aot friendly. this was a really important requirement for me to meet. as i mentioned, we had embarked on this journey to make minimal apis native aot friendly with the introduction of compile-time code generation for minimal apis in .net 8. it's important that new features in the framework continue to prioritize native AoT compat as a first-clss feature, so this is a pretty neat thing to have. -->
 
 ---
+layout: two-cols
+---
 
-*insert image of previews and youtube channel videos here*
+<Youtube id="XoMese9g8WQ" />
+
+::right::
+
+<Youtube id="keK69Y5HqvY" />
+
 
 <!-- now that's all i'm gonna share about what we've done in .net 9 for now. i want to save some intrigue for .net conf in a few months. if you're super curious though, you can always try out the previews of .net 9 and i believe rc1 is actually out today. there's also two deep dives into the support in .net 9 that you can check out over on the .net youtube channel. -->
 
