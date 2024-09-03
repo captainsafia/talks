@@ -24,19 +24,25 @@ image: ./images/epiphany.webp
 <!-- was to talk about my own past, present, and future with openapi in dotnet because it just so happens that its a feature area near and dear to my heart. -->
 
 ---
-
-*insert pandemic-related photo here*
+layout: image
+image: ./images/pandemic-desk.jpg
+---
 
 <!-- so, let's start the story. i joined the asp.net core at the start of the covid pandemic. like literally at the start. microsoft had sent an email informing us all that we would be embarking on a temporary work-from-home period as a result of covid-19 in march 2020 and about a week later was my first week on the asp.net core team. needless to say, it was an interesting onboarding experience. -->
 
 ---
-
-![blazor-logo](./images/blazor-logo.png)
-![signalr-logo](./images/signalr-logo.png)
-![grpc-logo](./images/grpc-logo.png)
-
+layout: image
+image: ./images/blazor-logo.png
+backgroundSize: contain
+---
 
 <!-- when i joined the asp.net core team, i was originally working on blazor around the .net 5/blazor wasm era. about a year later though, i found myself on a new team under the asp.net core umbrella as part of a re-org: the web frameworks team. the web frameworks team contained engineers that were stewards of mvc's controller-based apis, signalr, and this new-fangled thing called minimal apis. -->
+
+---
+layout: image
+image: ./images/pinching-emoji.png
+backgroundSize: contain
+---
 
 ---
 layout: image
@@ -64,7 +70,9 @@ backgroundSize: contain
 
 ---
 
-```yaml
+# OpenAPI Specification
+
+```text
 /pets:
 	get:
 		summary: List all pets
@@ -120,13 +128,15 @@ class: text-center
 
 # Spec First
 # vs
-# Code First
+# **Code First**
 
 <!-- now as i would come to learn in my self-directed onboarding of the openapi area, asp.net core is highly optimized for the code-first approach. some of you might be familiar with this if you've tried to run spec-first api design process for your team. i'll be the first to admit that we don't do a great job of that. -->
 
 ---
-
-*insert animation from codefirst to apiexplorer*
+layout: image
+image: ./images/apiexplorer.jpeg
+backgroundSize: contain
+---
 
 <!-- but, when it comes to code-first strategies i would learn that asp.net core actually had a pretty robust set of abstractions for generating descriptions of ASP.NET-based web apis...
 
@@ -326,18 +336,15 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
 <!-- you'll see this interface come into play in openapi document generators in the dotnet ecosystem. one of the popular libraries in this space is swashbuckle. here you can see the signature for the swaggergen service that swashbuckle uses as part of its document generation infrastructure. -->
 
 ---
-
-*insert indecisive gif here*
-
-<!-- now, i'll admit that i've had a love-hate relationship with ApiExplorer as an abstraction. at times, i've felt that it was redundant to have yet another way to describe endpoints in an application? why not just use openapi directly instead of this middleman abstraction? -->
-
----
 layout: image
 image: ./images/voltron-power.webp
 backgroundSize: contain
 ---
 
-<!-- but as it turns out, apiexplorer is powerful because it describes apis with a greater level of fidelity than openapi does and the richness of that abstraction makes it particularly powerful. -->
+<!-- 
+now, i'll admit that i've had a love-hate relationship with ApiExplorer as an abstraction. at times, i've felt that it was redundant to have yet another way to describe endpoints in an application? why not just use openapi directly instead of this middleman abstraction? 
+
+but as it turns out, apiexplorer is powerful because it describes apis with a greater level of fidelity than openapi does and the richness of that abstraction makes it particularly powerful. -->
 
 ---
 layout: image
@@ -377,7 +384,7 @@ $ dotnet new webapi -o TestApp
 $ cd TestApp
 $ dotnet add package Microsoft.Extensions.ApiDescription.Server
 $ dotnet build
-$ cat obj/
+$ cat obj/TestApp.json
 ```
 
 <!-- when you run `dotnet build` in an application that contains the package reference, you'll observe that the OpenAPI document associated with your application is automatically generated and inserted into your intermediate output directory. -->
@@ -593,13 +600,24 @@ it's a helpful feature that's an important part of accurately describing your ap
 ```csharp
 var builder = WebApplication.CreateBuilder();
 
+builder.Services.AddJwtBearer();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(config =>
+{
+	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+	{
+		Name = "Authorization",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = "Bearer"
+	});
+});
 
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello, secret world!")
-	.RequireAuthorization();
+	.RequireAuthorization()
+	.AddOpenApiSecurityRequirement();
 
 app.Run();
 ```
