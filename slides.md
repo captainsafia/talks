@@ -385,6 +385,22 @@ $ cd TestApp
 $ dotnet add package Microsoft.Extensions.ApiDescription.Server
 $ dotnet build
 $ cat obj/TestApp.json
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "TestApp | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/weatherforecast": {
+      "get": {
+        "tags": [
+          "TestApp"
+        ],
+        "operationId": "GetWeatherForecast",
+        "responses": {
+			...
+}
 ```
 
 <!-- when you run `dotnet build` in an application that contains the package reference, you'll observe that the OpenAPI document associated with your application is automatically generated and inserted into your intermediate output directory. -->
@@ -600,7 +616,8 @@ it's a helpful feature that's an important part of accurately describing your ap
 ```csharp
 var builder = WebApplication.CreateBuilder();
 
-builder.Services.AddJwtBearer();
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
 {
@@ -625,11 +642,13 @@ app.Run();
 <!-- currently, it's up to api authors to manually describe the security schemes and requirements their apis use. that means to accurately model authentication behavior you have to configure auth using asp.net core's auth apis and manually set the openapi requirements yourself using one of the apis available in 3rd party packages like swashbuckle shown here. -->
 
 ---
+
 ```csharp
 var builder = WebApplication.CreateBuilder();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -659,13 +678,16 @@ backgroundSize: contain
 
 i tinkered with implementing completely static openapi document generation via a source generator, using the same strategies that we used when building the request delegate generator for minimal apis. -->
 
----
-
 <!-- this approach had a couple of constraints though.
 
 the first, at the present moment, we're really only capable of statically anaylzing minimal apis  -->
 
 ---
+layout: image
+image: ./images/dotnet9.png
+backgroundSize: contain
+---
+
 
 <!-- so, .net 8 ended up being a season of experimentation and exploration in the openapi front. we are coming hurtling closer to the present-day portion of this presentation: .net 9. -->
 
@@ -772,12 +794,10 @@ $ dotnet publish /p:PublishAoT=true
 <!-- another neat thing about our openapi support in .net 9 is that it is native aot friendly. this was a really important requirement for me to meet. as i mentioned, we had embarked on this journey to make minimal apis native aot friendly with the introduction of compile-time code generation for minimal apis in .net 8. it's important that new features in the framework continue to prioritize native AoT compat as a first-clss feature, so this is a pretty neat thing to have. -->
 
 ---
-layout: two-cols
+layout: full
 ---
 
 <Youtube id="XoMese9g8WQ" />
-
-::right::
 
 <Youtube id="keK69Y5HqvY" />
 
@@ -785,8 +805,10 @@ layout: two-cols
 <!-- now that's all i'm gonna share about what we've done in .net 9 for now. i want to save some intrigue for .net conf in a few months. if you're super curious though, you can always try out the previews of .net 9 and i believe rc1 is actually out today. there's also two deep dives into the support in .net 9 that you can check out over on the .net youtube channel. -->
 
 ---
-
-*insert image about the future here*
+layout: image
+image: ./images/sunset-future.jpeg
+backgroundSize: contain
+---
 
 <!--
 so, that's the present, where do we go from here? well, i'll share some of the ideas that i have but i also want to hear from you about what you'd like to see happen in the open api space.
@@ -846,12 +868,6 @@ here's another one -- improving the experience for build-time document generatio
 and of course as i mentioned earlier, i'd love to hear what you think would be interesting to pursue in the space. come grab me in the hallway or after this talk to discuss more. -->
 
 ---
-
-*insert gif about the end here*
-
-<!-- and that's the story or at least, my story, of how openapi in .net has evolved over the past three years.  -->
-
----
 layout: two-cols-header
 ---
 
@@ -869,9 +885,15 @@ layout: two-cols-header
 
 - Mike Kistler
 - Vincent Biret
+- Richard Morris
+- Martin Costello
+- Chris Martinez
 
 
-<!-- before i conclude this talk, i wanted to close by emphasizing that this is the story of openapi support in .net as i've seen it. i'm now a participant in an ecosystem that's been development by a variety of individuals over a number of years. in this slide, i've listed out the names of people who've been involved in the space over the past, either in developing api explorer, ecosystem apis, the underlying `microsoft.openapi` library, or work on the spec itself. -->
+<!-- 
+and that's the story or at least, my story, of how openapi in .net has evolved over the past three years. 
+
+before i conclude this talk, i wanted to close by emphasizing that this is the story of openapi support in .net as i've seen it. i'm now a participant in an ecosystem that's been development by a variety of individuals over a number of years. in this slide, i've listed out the names of people who've been involved in the space over the past, either in developing api explorer, ecosystem apis, the underlying `microsoft.openapi` library, or work on the spec itself. -->
 
 ---
 layout: cover
