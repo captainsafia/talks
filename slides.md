@@ -407,7 +407,7 @@ $ cat obj/TestApp.json
 
 ---
 
-```xml {3}{lines:true}
+```xml {4}{lines:true}
 <PropertyGroup>
 	<_DotNetGetDocumentOutputPath>$(OpenApiDocumentsDirectory.TrimEnd('\'))</_DotNetGetDocumentOutputPath>
 	<_DotNetGetDocumentOutputPath>$([System.IO.Path]::GetFullPath('$(_DotNetGetDocumentOutputPath)'))</_DotNetGetDocumentOutputPath>
@@ -493,14 +493,6 @@ internal interface IDocumentProvider
 
 ---
 
-*insert uneasy gif here*
-
-<!-- now, there are some good reasons for why you might go about structuring an api this way, but i can't help but feel uneasy about how loose the api contract here is and how much it relies on private reflection. as a framework author, this sends a shiver up my spine. and admittedly, i haven't found a super compelling reason as to why things were done that way. some things just stay a mystery.
-
-let's put a pin on this too. we'll circle back to it. -->
-
----
-
 ```xml {5,6,7,8,9,10,11}{lines:true}
 <PropertyGroup>
 	<_DotNetGetDocumentOutputPath>$(OpenApiDocumentsDirectory.TrimEnd('\'))</_DotNetGetDocumentOutputPath>
@@ -516,7 +508,11 @@ let's put a pin on this too. we'll circle back to it. -->
 </PropertyGroup>
 ```
 
-<!-- the last bit of strangeness here is related to the fact that we jump between msbuild and a dotnet exeuctable to faciliate the full end-to-end for this application. -->
+<!-- now, there are some good reasons for why you might go about structuring an api this way, but i can't help but feel uneasy about how loose the api contract here is and how much it relies on private reflection. as a framework author, this sends a shiver up my spine. and admittedly, i haven't found a super compelling reason as to why things were done that way. some things just stay a mystery.
+
+let's put a pin on this too. we'll circle back to it.
+
+the last bit of strangeness here is related to the fact that we jump between msbuild and a dotnet exeuctable to faciliate the full end-to-end for this application. -->
 
 ---
 layout: image
@@ -549,17 +545,13 @@ backgroundSize: contain
 
 ---
 
+````md magic-move
 ```csharp
 public static TBuilder WithOpenApi<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder { }
-public static TBuilder WithOpenApi<TBuilder>(this TBuilder builder, Func<OpenApiOperation, OpenApiOperation> configureOperation)
+public static TBuilder WithOpenApi<TBuilder>(this TBuilder builder,
+		Func<OpenApiOperation, OpenApiOperation> configureOperation)
         where TBuilder : IEndpointConventionBuilder
 ```
-
-<!-- in .net 7, the surface area of this package is super slim. it's most notable api is an `WithOpenApi` extension method  -->
-
----
-
-````md magic-move
 ```csharp
 var app = WebApplication.Create();
 
@@ -581,21 +573,19 @@ app.Run();
 ```
 ````
 
+<!-- in .net 7, the surface area of this package is super slim. it's most notable api is an `WithOpenApi` extension method  -->
+
 <!-- when you called this extension method on a minimal api endpoint, asp.net core would generate an OpenAPI representation of an the associated endpoint and insert it into openapi metadata.
 
 if you wanted to, you could provide a callback to the `WithOpenApi` method that allowed you to modify the OpenAPI representation that was being generated before it was inserted into metadata. -->
-
----
-
-*insert gif related to side quests here*
-
-<!-- that was .net 7. .net 8 was a relatively quiet release on the openapi front. i found myself going on a bit of a side quest working on this little thing called the request delegate generator. it was part of our native AoT effort in .net 8 and involved introducing compile-time based code generation for minimal apis. -->
 
 ---
 layout: image
 image: ./images/tinkering-gif.webp
 backgroundSize: contain
 ---
+
+<!-- that was .net 7. .net 8 was a relatively quiet release on the openapi front. i found myself going on a bit of a side quest working on this little thing called the request delegate generator. it was part of our native AoT effort in .net 8 and involved introducing compile-time based code generation for minimal apis. -->
 
 <!-- but, i was still tinkering with some ideas related to openapi on the side. here are just some of the things that i was playing around with. -->
 
@@ -673,6 +663,10 @@ backgroundSize: contain
 <!-- as you can see, this issue is currently in .net 9 planning and nothing's happened. but maybe .net 10? -->
 
 ---
+layout: image
+image: images/nuget-meapidescriptionserver.png
+backgroundSize: contain
+---
 
 <!-- the other thing i was tinkering with was circling back to that earlier point around build-time document generation. as we previously discussed, build-time document generation via the microsoft.extensions.apidescription.server package works by launching the api's entry point to resolve the registered apis.
 
@@ -692,6 +686,8 @@ backgroundSize: contain
 <!-- so, .net 8 ended up being a season of experimentation and exploration in the openapi front. we are coming hurtling closer to the present-day portion of this presentation: .net 9. -->
 
 ---
+
+# Built-in support for Open API document generation
 
 ````md magic-move
 ```csharp
@@ -742,7 +738,15 @@ JSON schema is a specification that allows developers to describe the data that 
 
 ---
 
+# Built-in support for JSON schema generation
+
+````md magic-move
 ```csharp
+using System.Text.Json;
+using System.Text.Json.Schema;
+
+var schema = JsonSchemaExporter.GetSchemaAsJsonNode(typeof(Todo), JsonSerializerOptions.Default);
+
 record Todo(int Id, string Title, bool IsCompleted, DateTime DueDate);
 ```
 ```json
@@ -765,31 +769,24 @@ record Todo(int Id, string Title, bool IsCompleted, DateTime DueDate);
 	}
 }
 ```
+````
 
 <!-- the openapi specification makes use of json schema when representing the data types that are transmitted by an api over the wire. for example, a Todo type in .NET has the following json schema representation. -->
 
 ---
 
-```csharp
-using System.Text.Json;
-using System.Text.Json.Schema;
-
-var schema = JsonSchemaExporter.GetSchemaAsJsonNode(typeof(Todo), JsonSerializerOptions.Default);
-
-record Todo(int Id, string Title, bool IsCompleted, DateTime DueDate);
-```
-
-<!-- in dotnet9, the system.text.json team has introduced new apis for generating json schemas from dotnet types. -->
-
----
+# Native AoT supported by default
 
 ```bash
 $ dotnet new webapi -o OpenApiWithAot
 $ cd OpenApiWithAot
 $ dotnet publish /p:PublishAoT=true
-```
+Restore complete (44.9s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  OpenApiWithAot succeeded (47.1s) → bin/Release/net9.0/osx-arm64/publish/
 
----
+Build succeeded in 92.6s
+```
 
 <!-- another neat thing about our openapi support in .net 9 is that it is native aot friendly. this was a really important requirement for me to meet. as i mentioned, we had embarked on this journey to make minimal apis native aot friendly with the introduction of compile-time code generation for minimal apis in .net 8. it's important that new features in the framework continue to prioritize native AoT compat as a first-clss feature, so this is a pretty neat thing to have. -->
 
@@ -797,10 +794,23 @@ $ dotnet publish /p:PublishAoT=true
 layout: full
 ---
 
+# Learn more about Open API in .NET 9
+
+<table>
+<tr>
+<td>
 <Youtube id="XoMese9g8WQ" />
-
+</td>
+<td>
 <Youtube id="keK69Y5HqvY" />
-
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<img src="./images/dotnetconf24-dark.png" />
+</td>
+</tr>
+</table>
 
 <!-- now that's all i'm gonna share about what we've done in .net 9 for now. i want to save some intrigue for .net conf in a few months. if you're super curious though, you can always try out the previews of .net 9 and i believe rc1 is actually out today. there's also two deep dives into the support in .net 9 that you can check out over on the .net youtube channel. -->
 
@@ -868,21 +878,14 @@ here's another one -- improving the experience for build-time document generatio
 and of course as i mentioned earlier, i'd love to hear what you think would be interesting to pursue in the space. come grab me in the hallway or after this talk to discuss more. -->
 
 ---
-layout: two-cols-header
----
 
 # Acknowledgements
-
-::left::
 
 - Darrel Miller
 - Rico Suter
 - Ryan Nowak
 - Doug Bunting
 - Eric Erhardt
-
-::right::
-
 - Mike Kistler
 - Vincent Biret
 - Richard Morris
