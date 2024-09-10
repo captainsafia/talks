@@ -3,9 +3,9 @@ layout: cover
 class: text-center
 ---
 
-# openapi in .net
+# openapi in asp.net
 # past, present, and future
-## safia abdalla | principal software engineer | microsoft
+## safia abdalla | @captainsafia
 
 <!-- good afternoon, everyone! my name is safia abdalla and i'm an engineer on the asp.net core team at microsoft and i am here to talk to you about the past, present, and future of openapi in .net. if you don't know what openapi is, don't worry you'll learn all about it in the course of this talk. and if you do know what openapi is, you'll hopefully learn some interesting new context from this presentation. -->
 
@@ -152,6 +152,8 @@ backgroundSize: contain
 
 ---
 
+# Looking at ApiExplorer's abstraction model
+
 ````md magic-move
 ```csharp
 public interface IApiDescriptionProvider { }
@@ -176,6 +178,8 @@ public class ApiDescriptionProviderContext
 <!-- ok, back to 2021 safia as i am unraveling all this. the heart of the apiexplorer is an interface called `IApiDescriptionProvider`. The interface requires that implementors provide an `OnProviderExecuting` implementation, which when called will populate a context object with `ApiDescription` instances. -->
 
 ---
+
+# Looking at ApiExplorer's abstraction model
 
 ````md magic-move
 ```csharp
@@ -227,6 +231,8 @@ and finally, most helpful apis provide some kind of response, so we have a way o
 
 ---
 
+# Looking at ApiExplorer's abstraction model
+
 ```csharp
 public class DefaultApiDescriptionProvider : IApiDescriptionProvider { }
 ```
@@ -249,6 +255,8 @@ any api framework built on top of asp.net core can describe its apis using this 
 
 ---
 
+# Using ApiExplorer's abstractions
+
 ```csharp
 var builder = WebApplication.CreateBuilder();
 
@@ -264,6 +272,8 @@ var app = builder.Build();
 and of course, your framework of choice can use a similar pattern to inject its own implementation. -->
 
 ---
+
+# Using ApiExplorer's abstractions
 
 ````md magic-move
 ```csharp
@@ -318,6 +328,7 @@ this interface is the holy grail of api description metadata in our application.
 
 ---
 
+# Using ApiExplorer's abstractions
 
 ```csharp {7}{lines:true}
 namespace Swashbuckle.AspNetCore.SwaggerGen
@@ -364,6 +375,8 @@ ok, let's talk about what it is and and how it does it. -->
 
 ---
 
+# Generating OpenAPI documents at build-time
+
 ```
 $ dotnet add package Microsoft.Extensions.ApiDescription.Server
 ```
@@ -378,6 +391,8 @@ $ dotnet add package Microsoft.Extensions.ApiDescription.Server
 <!-- the package supports being able to generate openapi documents at build-time. if you install the package, you'll see the following packagereference populated into your csproj. -->
 
 ---
+
+# Generating OpenAPI documents at build-time
 
 ```
 $ dotnet new webapi -o TestApp
@@ -407,6 +422,8 @@ $ cat obj/TestApp.json
 
 ---
 
+# Inside build-time document generation
+
 ```xml {4}{lines:true}
 <PropertyGroup>
 	<_DotNetGetDocumentOutputPath>$(OpenApiDocumentsDirectory.TrimEnd('\'))</_DotNetGetDocumentOutputPath>
@@ -427,6 +444,8 @@ $ cat obj/TestApp.json
 what the package is actually doing under the hood is wiring up a set of msbuild targets that invoke an executable assembly called `dotnet-getdocument` when the application's build is invoked. -->
 
 ---
+
+# Inside build-time document generation
 
 ````md magic-move
 ```csharp
@@ -480,6 +499,8 @@ let's put a pin on this weirdness, we'll circle back to it in a bit. -->
 
 ---
 
+# Inside build-time document generation
+
 ```csharp
 internal interface IDocumentProvider
 {
@@ -492,6 +513,8 @@ internal interface IDocumentProvider
 <!-- the second weird thing doing on here is the `IDocumentProvider` interface. what you'll notice about this interface is that its internal. it's not exposed as a public api anywhere in the asp.net core ecosystem. instead, the contract for how this interface works is by name only. if a package like swashbuckle or nswag is capable of providing support for generating openapi documents at build-time, it must define this interface in the agreed upon shape and namespace in its own assemblies. -->
 
 ---
+
+# Inside build-time document generation
 
 ```xml {5,6,7,8,9,10,11}{lines:true}
 <PropertyGroup>
@@ -544,6 +567,8 @@ backgroundSize: contain
 <!-- and .net 7 is exciting for openapi because that is when we introduce the `microsoft.aspnetcore.openapi` package. specifically, the packages comes out in .net 7 preview 4 in may of 2022. -->
 
 ---
+
+# New in .NET 7
 
 ````md magic-move
 ```csharp
@@ -603,6 +628,8 @@ it's a helpful feature that's an important part of accurately describing your ap
 
 ---
 
+# Configuring security requirements with OpenAPI
+
 ```csharp
 var builder = WebApplication.CreateBuilder();
 
@@ -632,6 +659,8 @@ app.Run();
 <!-- currently, it's up to api authors to manually describe the security schemes and requirements their apis use. that means to accurately model authentication behavior you have to configure auth using asp.net core's auth apis and manually set the openapi requirements yourself using one of the apis available in 3rd party packages like swashbuckle shown here. -->
 
 ---
+
+# Configuring security requirements with OpenAPI
 
 ```csharp
 var builder = WebApplication.CreateBuilder();
@@ -797,6 +826,7 @@ layout: full
 # Learn more about Open API in .NET 9
 
 <table>
+<tbody>
 <tr>
 <td>
 <Youtube id="XoMese9g8WQ" />
@@ -810,6 +840,7 @@ layout: full
 <img src="./images/dotnetconf24-dark.png" />
 </td>
 </tr>
+</tbody>
 </table>
 
 <!-- now that's all i'm gonna share about what we've done in .net 9 for now. i want to save some intrigue for .net conf in a few months. if you're super curious though, you can always try out the previews of .net 9 and i believe rc1 is actually out today. there's also two deep dives into the support in .net 9 that you can check out over on the .net youtube channel. -->
@@ -835,6 +866,8 @@ one of the the things that's on my bucketlist for (fingers crossed) .net 10, is 
 -->
 
 ---
+
+# Support for OpenAPI docs enhanced with XML doc comments
 
 ```csharp
 /// <summary>
